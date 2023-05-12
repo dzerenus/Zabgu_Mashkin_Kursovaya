@@ -93,6 +93,7 @@ public class MWindowVM : INotifyPropertyChanged
         }
     }
 
+    public ICommand AddNewThreadCommand { get; }
     public ICommand StartOrStopAttack { get; }
 
     private string _attackStatus = "ОТКЛЮЧЕНА";
@@ -110,6 +111,12 @@ public class MWindowVM : INotifyPropertyChanged
 
     public MWindowVM()
     {
+        AddNewThreadCommand = new RelayCommand(_ =>
+        {
+            var addWindow = new AddThreadWindow();
+            addWindow.ShowDialog();
+        });
+
         StartOrStopAttack = new RelayCommand(x =>
         {
             if (_flooder != null)

@@ -1,12 +1,11 @@
 ﻿<Window x:Class="UDPFlood.Flooder.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:UDPFlood.Flooder"
         xmlns:vms="clr-namespace:UDPFlood.Flooder.ViewModels"
         mc:Ignorable="d"
-        Title="Флудер" Height="150" Width="600" ResizeMode="CanMinimize">
+        Title="Флудер" Height="400" Width="800" ResizeMode="CanMinimize">
     <Window.DataContext>
         <vms:MWindowVM/>
     </Window.DataContext>
@@ -14,6 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30px"/>
             <RowDefinition/>
+            <RowDefinition Height="30px"/>
         </Grid.RowDefinitions>
 
         <Grid Margin="0 0 0 5">
@@ -21,14 +21,13 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <TextBlock
                 Grid.Column="0"
                 VerticalAlignment="Center"
-                Text="IP цели:"
+                Text="IP Адрес цели:"
                 />
             <TextBox 
                 Grid.Column="1"
@@ -38,24 +37,48 @@
                 IsEnabled="{Binding IsInputEnabled}"
                 />
 
-            <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="Потоков: "/>
-            <TextBox 
-                Grid.Column="3" 
-                Width="30" 
-                VerticalContentAlignment="Center" 
-                Text="{Binding ThreadCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                IsEnabled="{Binding IsInputEnabled}"
-                />
-            <Button 
+            <Button Grid.Column="2" Content="Анализ портов цели" Width="140px"/>
+
+            <Button
                 Grid.Column="4"
                 Margin="5 0"
                 Content="{Binding AttackButtonText}"
                 IsEnabled="{Binding IsAttackButtonEnabled}"
                 Command="{Binding StartOrStopAttack}"
                 />
+
+            <!-- Неиспользуемый код - удалить -->
+            <TextBlock Visibility="Collapsed" Grid.Column="2" VerticalAlignment="Center" Text="Потоков: "/>
+            <TextBox Visibility="Collapsed"
+                Grid.Column="3" 
+                Width="30" 
+                VerticalContentAlignment="Center" 
+                Text="{Binding ThreadCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                IsEnabled="{Binding IsInputEnabled}"
+                />
         </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="0 0 0 10px">
+            <GroupBox Header="Потоки выполнения атаки">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="30px"/>
+                    </Grid.RowDefinitions>
+
+                    <Button 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        Width="150px" 
+                        HorizontalAlignment="Right" 
+                        Content="Добавить поток"
+                        Command="{Binding AddNewThreadCommand}"
+                        />
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
@@ -71,7 +94,6 @@
 
             <TextBlock Grid.Column="4" Text="Пакетов в секунду:" FontSize="16px" FontWeight="Bold" Margin="10 0 10 0" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="5" Text="{Binding PrevSecondPacketCount}" FontSize="16px" FontWeight="Bold" VerticalAlignment="Center"/>
-
         </Grid>
     </Grid>
 </Window>

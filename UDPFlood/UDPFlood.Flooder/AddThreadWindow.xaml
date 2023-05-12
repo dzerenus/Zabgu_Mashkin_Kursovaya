@@ -1,0 +1,43 @@
+﻿<Window x:Class="UDPFlood.Flooder.AddThreadWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UDPFlood.Flooder"
+        mc:Ignorable="d"
+        Title="Добавить новый поток" Height="450" Width="600px" ResizeMode="NoResize" WindowStyle="ToolWindow">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150px"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="100px"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50px"/>
+            <RowDefinition Height="50px"/>
+            <RowDefinition Height="50px"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBlock 
+            Grid.Row="0" 
+            Margin="0 0 5 0"
+            HorizontalAlignment="Right"
+            Text="IP адреса источника:" 
+            />
+
+        <TextBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            TextWrapping="Wrap"
+            />
+
+        <CheckBox 
+            Grid.Row="0"
+            Grid.Column="2"
+            Margin="5 0 0 0"
+            Content="Случайно"
+            />
+    </Grid>
+</Window>

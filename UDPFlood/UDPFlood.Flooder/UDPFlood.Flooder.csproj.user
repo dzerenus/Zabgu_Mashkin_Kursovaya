@@ -7,6 +7,14 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="AddThreadWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AddThreadWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="MWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
