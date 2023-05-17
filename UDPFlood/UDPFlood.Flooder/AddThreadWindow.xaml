@@ -3,41 +3,230 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:UDPFlood.Flooder"
+        xmlns:vms="clr-namespace:UDPFlood.Flooder.ViewModels"
         mc:Ignorable="d"
-        Title="Добавить новый поток" Height="450" Width="600px" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        Title="Добавить новый поток" Height="700px" Width="600px" ResizeMode="NoResize" WindowStyle="ToolWindow">
+    <Window.DataContext>
+        <vms:AddThreadViewModel/>
+    </Window.DataContext>
     <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150px"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="100px"/>
-        </Grid.ColumnDefinitions>
-
         <Grid.RowDefinitions>
-            <RowDefinition Height="50px"/>
-            <RowDefinition Height="50px"/>
-            <RowDefinition Height="50px"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <GroupBox Header="IP адреса источника">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                
+                <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
+                    Text="{Binding IPSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
 
-        <TextBlock 
-            Grid.Row="0" 
-            Margin="0 0 5 0"
-            HorizontalAlignment="Right"
-            Text="IP адреса источника:" 
-            />
+                <Grid Grid.Row="1" Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <TextBox 
-            Grid.Row="0"
-            Grid.Column="1"
-            TextWrapping="Wrap"
-            />
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Выбор из списка"
+                        IsChecked="{Binding IPSourceIsFromTextBox}"
+                        />
+                    <RadioButton
+                        Grid.Column="1"
+                        Content="Использовать мой"
+                        Margin="0 0 20 0"
+                        IsChecked="{Binding IPSourceIsMine}"
+                        />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Случайный для каждого пакета"
+                        IsChecked="{Binding IPSourceIsRandom}"
+                        />
+                </Grid>
+            </Grid>
+        </GroupBox>
 
-        <CheckBox 
-            Grid.Row="0"
-            Grid.Column="2"
-            Margin="5 0 0 0"
-            Content="Случайно"
-            />
+        <GroupBox Grid.Row="1" Header="MAC адреса источника">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding MACSourceAddressesTextboxEnabled}"
+                    Text="{Binding MACSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <Grid Grid.Row="1" Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Выбор из списка"
+                        IsChecked="{Binding MACSourceIsFromTextBox}"
+                        />
+                    <RadioButton
+                        Grid.Column="1"
+                        Content="Использовать мой"
+                        Margin="0 0 20 0"
+                        IsChecked="{Binding MACSourceIsMine}"
+                        />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Случайный для каждого пакета"
+                        IsChecked="{Binding MACSourceIsRandom}"
+                        />
+                </Grid>
+            </Grid>
+        </GroupBox>
+        
+        <GroupBox Grid.Row="2" Header="Порты назначения">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding PortsDistinationTextboxEnabled}"
+                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <Grid Grid.Row="1" Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Выбор из списка"
+                        IsChecked="{Binding PortsDistinationIsFromTextBox}"
+                    />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Случайный для каждого пакета"
+                        IsChecked="{Binding PortsDistinationIsRandom}"
+                        />
+                </Grid>
+            </Grid>
+        </GroupBox>
+        
+        <GroupBox Grid.Row="3" Header="Периодичность">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Слать пакеты постоянно"
+                        IsChecked="{Binding TimeIsDelayDisabled}"
+                    />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Задать периодичность"
+                        IsChecked="{Binding TimeIsDelayEnabled}"
+                        />
+                </Grid>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0 5">
+                    <TextBlock Text="Каждые "/>
+                    <TextBox 
+                        Width="75px"
+                        IsEnabled="{Binding TimeIsDelayEnabled}"
+                        Text="{Binding TimeEverySecondsTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        />
+                    <TextBlock Text=" сек. на протяжении "/>
+                    <TextBox 
+                        Width="75px"
+                        IsEnabled="{Binding TimeIsDelayEnabled}"
+                        Text="{Binding TimeLengthTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        />
+                    <TextBlock Text=" сек. с интервалом "/>
+                    <TextBox 
+                        Width="75px"
+                        IsEnabled="{Binding TimeIsDelayEnabled}"
+                        Text="{Binding TimeDelayTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        />
+                    <TextBlock Text=" сек."/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="4" Header="Содержимое пакета">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding PortsDistinationTextboxEnabled}"
+                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                <Grid Grid.Row="1" Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Ввод содержимого"
+                        IsChecked="{Binding PortsDistinationIsFromTextBox}"
+                        />
+                    <RadioButton
+                        Grid.Column="1"
+                        Margin="0 0 20 0"
+                        Content="Пустое содержимое"
+                        IsChecked="{Binding PortsDistinationIsRandom}"
+                        />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Случайное содержимое"
+                        IsChecked="{Binding PortsDistinationIsRandom}"
+                        />
+                </Grid>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

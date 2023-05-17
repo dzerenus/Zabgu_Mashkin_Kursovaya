@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Linq;
+using UDPFlood.UDPWorker;
 
 namespace UDPFlood.Flooder;
 
@@ -26,6 +27,8 @@ public sealed class UDPFlooder
 
         Threads = threads;
         Address = ipAddress;
+
+        UDPWorker.UDPWorker.Test();
     }
 
     public void Stop() => IsFlooderWorking = false;
