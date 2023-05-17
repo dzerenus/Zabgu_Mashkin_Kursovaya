@@ -9,9 +9,7 @@ namespace UDPFlood.Flooder.ViewModels;
 
 public class AddThreadViewModel : INotifyPropertyChanged
 {
-    public delegate void AddThreadEventArgs(
-        IpSettings ip, MacSettings mac, PortSettings port,
-        DelaySettings? delay, ContentSettings? content);
+    public delegate void AddThreadEventArgs(ThreadSettings thread);
 
     public event AddThreadEventArgs? AddThread;
 
@@ -342,7 +340,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
             : ContentIsTextBoxMessage ? new ContentSettings(ContentMode.FromContent, ContentTextBoxText)
             : throw new InvalidOperationException();
 
-        AddThread?.Invoke(ipSettings, macSettings, portSettings, delaySettings, contentSettings);
+        AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, macSettings));
     }
 
     private void ValidateInput()

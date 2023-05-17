@@ -1,8 +1,11 @@
 ﻿namespace UDPFlood.Flooder.ViewModels;
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using UDPFlood.Ethernet.FloodSettings;
 
 public class MWindowVM : INotifyPropertyChanged
 {
@@ -92,9 +95,20 @@ public class MWindowVM : INotifyPropertyChanged
             }
         }
     }
+    public int DataGridItemSelectedIndex 
+    { 
+        get => _dataGridItemSelectedIndex;
+        set
+        {
+            _dataGridItemSelectedIndex = -1;
+            OnPropertyChanged(nameof(DataGridItemSelectedIndex));
+        }
+    }
 
     public ICommand AddNewThreadCommand { get; }
     public ICommand StartOrStopAttack { get; }
+
+    public ObservableCollection<ThreadSettingsViewModel> ThreadsCollection { get; } = new ();
 
     private string _attackStatus = "ОТКЛЮЧЕНА";
     private string _attackButtonText = "💣 Начать атаку";
@@ -107,6 +121,10 @@ public class MWindowVM : INotifyPropertyChanged
     private int _secondPacketCount = 0;
     private long _currentSecond = 0;
 
+    private int _dataGridItemSelectedIndex = -1;
+
+    private readonly List<ThreadSettings> _threads = new List<ThreadSettings>();
+
     private UDPFlooder? _flooder;
 
     public MWindowVM()
@@ -114,6 +132,21 @@ public class MWindowVM : INotifyPropertyChanged
         AddNewThreadCommand = new RelayCommand(_ =>
         {
             var addWindow = new AddThreadWindow();
+            var context = addWindow.DataContext as AddThreadViewModel;
+
+            if (context == null)
+                throw new NullReferenceException("Invalid AddThreadWindow DataContext");
+
+            context.AddThread += (ThreadSettings thread) =>
+            {
+                _threads.Add(thread);
+                
+                ThreadsCollection.Clear();
+                _threads.ForEach(x => ThreadsCollection.Add(new(x)));
+
+                addWindow.Close();
+            };
+
             addWindow.ShowDialog();
         });
 

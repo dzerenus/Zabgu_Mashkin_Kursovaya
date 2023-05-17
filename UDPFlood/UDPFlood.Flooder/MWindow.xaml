@@ -4,8 +4,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:UDPFlood.Flooder.ViewModels"
+        xmlns:elements="clr-namespace:UDPFlood.Flooder.Elements"
         mc:Ignorable="d"
-        Title="Флудер" Height="400" Width="800" ResizeMode="CanMinimize">
+        Title="Флудер" Height="600" Width="900">
     <Window.DataContext>
         <vms:MWindowVM/>
     </Window.DataContext>
@@ -65,6 +66,42 @@
                         <RowDefinition/>
                         <RowDefinition Height="30px"/>
                     </Grid.RowDefinitions>
+
+                    <elements:ThreadsDataGrid 
+                        ItemsSource="{Binding ThreadsCollection}" 
+                        CanUserAddRows="False" 
+                        AutoGenerateColumns="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        SelectedIndex="{Binding DataGridItemSelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        BorderThickness="0"
+                        >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Статус потока" Binding="{Binding Path=WorkStatus}" Width="200"/>
+                            <DataGridTextColumn Header="Source IP" Binding="{Binding Path=SrcIpMode}" Width="130"/>
+                            <DataGridTextColumn Header="Source MAC" Binding="{Binding Path=SrcMacMode}" Width="130"/>
+                            <DataGridTextColumn Header="Source Port" Binding="{Binding Path=DstPortsMode}" Width="130"/>
+                            <DataGridTextColumn Header="Содержимое пакета" Binding="{Binding Path=PacketContentMode}" Width="150"/>
+                            <DataGridTemplateColumn Header="" Width="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Изменить"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Background" Value="LightGray"/>
+                                <Setter Property="BorderThickness" Value="1 1 1 1"/>
+                                <Setter Property="BorderBrush" Value="Gray"/>
+                                <Setter Property="Padding" Value="0 3"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                    </elements:ThreadsDataGrid>
 
                     <Button 
                         Grid.Row="1" 
