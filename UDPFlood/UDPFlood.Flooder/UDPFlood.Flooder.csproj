@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UDPFlood.Ethernet\UDPFlood.Ethernet.csproj" />
     <ProjectReference Include="..\UDPFlood.UDPWorker\UDPFlood.UDPWorker.csproj" />
   </ItemGroup>
 

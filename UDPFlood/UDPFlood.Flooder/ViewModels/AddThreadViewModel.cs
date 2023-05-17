@@ -1,21 +1,31 @@
-﻿using System.ComponentModel;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using UDPFlood.Ethernet.FloodSettings;
 
 namespace UDPFlood.Flooder.ViewModels;
 
 public class AddThreadViewModel : INotifyPropertyChanged
 {
-    public string IPSourceAddressesTextboxText 
+    public delegate void AddThreadEventArgs(
+        IpSettings ip, MacSettings mac, PortSettings port,
+        DelaySettings? delay, ContentSettings? content);
+
+    public event AddThreadEventArgs? AddThread;
+
+    public string IPSourceAddressesTextboxText
     {
-        get => _iPSourceAddressesTextboxText; 
+        get => _iPSourceAddressesTextboxText;
         set
         {
             _iPSourceAddressesTextboxText = value;
             OnPropertyChanged(nameof(IPSourceAddressesTextboxText));
-        } 
+            ValidateInput();
+        }
     }
-    public bool IPSourceAddressesTextboxEnabled 
+    public bool IPSourceAddressesTextboxEnabled
     {
         get => _iPSourceAddressesTextboxEnabled;
         set
@@ -24,7 +34,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(IPSourceAddressesTextboxEnabled));
         }
     }
-    public bool IPSourceIsFromTextBox 
+    public bool IPSourceIsFromTextBox
     {
         get => _iPSourceIsFromTextBox;
         set
@@ -32,9 +42,10 @@ public class AddThreadViewModel : INotifyPropertyChanged
             IPSourceAddressesTextboxEnabled = value;
             _iPSourceIsFromTextBox = value;
             OnPropertyChanged(nameof(IPSourceIsFromTextBox));
+            ValidateInput();
         }
     }
-    public bool IPSourceIsRandom 
+    public bool IPSourceIsRandom
     {
         get => _iPSourceIsRandom;
         set
@@ -60,6 +71,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _macSourceAddressesTextboxText = value;
             OnPropertyChanged(nameof(MACSourceAddressesTextboxText));
+            ValidateInput();
         }
     }
     public bool MACSourceAddressesTextboxEnabled
@@ -79,6 +91,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
             MACSourceAddressesTextboxEnabled = value;
             _macSourceIsFromTextBox = value;
             OnPropertyChanged(nameof(MACSourceIsFromTextBox));
+            ValidateInput();
         }
     }
     public bool MACSourceIsRandom
@@ -107,6 +120,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _portsDistinationTextboxText = value;
             OnPropertyChanged(nameof(PortsDistinationTextboxText));
+            ValidateInput();
         }
     }
     public bool PortsDistinationTextboxEnabled
@@ -126,6 +140,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
             PortsDistinationTextboxEnabled = value;
             _portDistinationIsFromTextBox = value;
             OnPropertyChanged(nameof(PortsDistinationIsFromTextBox));
+            ValidateInput();
         }
     }
     public bool PortsDistinationIsRandom
@@ -145,6 +160,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeIsDelayEnabled = value;
             OnPropertyChanged(nameof(TimeIsDelayEnabled));
+            ValidateInput();
         }
     }
     public bool TimeIsDelayDisabled
@@ -163,6 +179,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeEverySecondsTextboxText = value;
             OnPropertyChanged(nameof(TimeEverySecondsTextboxText));
+            ValidateInput();
         }
     }
     public string TimeLengthTextboxText
@@ -172,6 +189,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeLengthTextboxText = value;
             OnPropertyChanged(nameof(TimeLengthTextboxText));
+            ValidateInput();
         }
     }
     public string TimeDelayTextboxText
@@ -181,6 +199,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeDelayTextboxText = value;
             OnPropertyChanged(nameof(TimeDelayTextboxText));
+            ValidateInput();
         }
     }
 
@@ -189,10 +208,78 @@ public class AddThreadViewModel : INotifyPropertyChanged
         get => _contentIsEmptyMessage;
         set
         {
+            if (value)
+            {
+                ContentIsRandomMessage = false;
+                ContentIsTextBoxMessage = false;
+            }
+
             _contentIsEmptyMessage = value;
             OnPropertyChanged(nameof(ContentIsEmptyMessage));
         }
     }
+    public bool ContentIsRandomMessage
+    {
+        get => _contentIsRandomMessage;
+        set
+        {
+            if (value)
+            {
+                ContentIsEmptyMessage = false;
+                ContentIsTextBoxMessage = false;
+            }
+
+            _contentIsRandomMessage = value;
+            OnPropertyChanged(nameof(ContentIsRandomMessage));
+        }
+    }
+    public bool ContentIsTextBoxMessage
+    {
+        get => _contentIsTextboxMessage;
+        set
+        {
+            if (value)
+            {
+                ContentIsRandomMessage = false;
+                ContentIsEmptyMessage = false;
+            }
+
+            _contentIsTextboxMessage = value;
+            OnPropertyChanged(nameof(ContentIsTextBoxMessage));
+            ValidateInput();
+        }
+    }
+    public string ContentTextBoxText
+    {
+        get => _contentTextboxText;
+        set
+        {
+            _contentTextboxText = value;
+            OnPropertyChanged(nameof(ContentTextBoxText));
+            ValidateInput();
+        }
+    }
+
+    public string ErrorMessage
+    {
+        get => _errorMessage;
+        set
+        {
+            _errorMessage = value;
+            ErrorMessageVisibility = value == string.Empty ? Visibility.Hidden : Visibility.Visible;
+            IsInputValid = value == string.Empty;
+
+            OnPropertyChanged(nameof(ErrorMessage));
+            OnPropertyChanged(nameof(ErrorMessageVisibility));
+            OnPropertyChanged(nameof(IsInputValid));
+        }
+    }
+    public Visibility ErrorMessageVisibility { get; set; } = Visibility.Hidden;
+    public bool IsInputValid { get; set; }
+
+    public ICommand AddThreadCommand { get; private set; }
+
+    private string _errorMessage = string.Empty;
 
     private bool _contentIsEmptyMessage = true;
     private bool _contentIsRandomMessage = true;
@@ -221,6 +308,98 @@ public class AddThreadViewModel : INotifyPropertyChanged
     private bool _iPSourceIsRandom = true;
     private bool _iPSourceIsMine = true;
 
+    public AddThreadViewModel()
+    {
+        AddThreadCommand = new RelayCommand(x => DoAddThread());
+    }
+
+    private void DoAddThread()
+    {
+        if (!IsInputValid)
+            throw new InvalidOperationException();
+
+        var ipSettings = IPSourceIsMine ? new IpSettings(IpMode.MySelf)
+            : IPSourceIsRandom ? new IpSettings(IpMode.Random)
+            : IPSourceIsFromTextBox ? new IpSettings(IpMode.FromList, IPSourceAddressesTextboxText.Split(";"))
+            : throw new InvalidOperationException();
+
+
+        var macSettings = MACSourceIsMine ? new MacSettings(MacMode.MySelf)
+            : MACSourceIsRandom ? new MacSettings(MacMode.Random)
+            : MACSourceIsFromTextBox ? new MacSettings(MacMode.FromList, MACSourceAddressesTextboxText.Split(";"))
+            : throw new InvalidOperationException();
+
+        var portSettings = PortsDistinationIsRandom ? new PortSettings(PortMode.Random)
+            : PortsDistinationIsFromTextBox ? new PortSettings(PortMode.FromList, PortsDistinationTextboxText.Split(";").Select(int.Parse))
+            : throw new InvalidOperationException();
+
+        var delaySettings = TimeIsDelayEnabled 
+            ? new DelaySettings(true, int.Parse(TimeEverySecondsTextboxText), int.Parse(TimeLengthTextboxText), int.Parse(TimeDelayTextboxText)) 
+            : new DelaySettings(false, 0, 0, 0);
+
+        var contentSettings = ContentIsEmptyMessage ? new ContentSettings(ContentMode.Empty)
+            : ContentIsRandomMessage ? new ContentSettings(ContentMode.Random)
+            : ContentIsTextBoxMessage ? new ContentSettings(ContentMode.FromContent, ContentTextBoxText)
+            : throw new InvalidOperationException();
+
+        AddThread?.Invoke(ipSettings, macSettings, portSettings, delaySettings, contentSettings);
+    }
+
+    private void ValidateInput()
+    {
+        if (IPSourceIsFromTextBox)
+        {
+            var parts = IPSourceAddressesTextboxText.Split(";");
+
+            foreach (var part in parts)
+                if (!Ethernet.Validate.IsValidIP(part))
+                {
+                    ErrorMessage = "Неверно заданы IP источника!";
+                    return;
+                }
+        }
+
+        if (MACSourceIsFromTextBox)
+        {
+            var parts = MACSourceAddressesTextboxText.Split(";");
+
+            foreach (var part in parts)
+                if (!Ethernet.Validate.IsValidMAC(part))
+                {
+                    ErrorMessage = "Неверно заданы MAC источника!";
+                    return;
+                }
+        }
+
+        if (PortsDistinationIsFromTextBox)
+        {
+            var parts = PortsDistinationTextboxText.Split(";");
+
+            foreach (var part in parts)
+                if (!Ethernet.Validate.IsValidPort(part))
+                {
+                    ErrorMessage = "Неверно заданы порты назначения!";
+                    return;
+                }
+        }
+
+        if (TimeIsDelayEnabled)
+        {
+            if (!int.TryParse(TimeEverySecondsTextboxText, out var everySecond) || everySecond < 0
+                || !int.TryParse(TimeLengthTextboxText, out var timeLength) || timeLength < 0 || timeLength > everySecond
+                || !int.TryParse(TimeDelayTextboxText, out var timeDelay) || timeDelay < 0 || timeDelay >= timeLength)
+            {
+                ErrorMessage = "Время задано неверно!";
+                return;
+            }
+        }
+
+        ErrorMessage = string.Empty;
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
-    public void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+    public void OnPropertyChanged(string prop)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+    }
 }

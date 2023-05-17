@@ -11,19 +11,38 @@
     </Window.DataContext>
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="IP адреса источника">
+
+        <Grid Background="LightYellow" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Подсказка" FontWeight="Bold" Margin="5 0"/>
+
+            <TextBlock 
+                Grid.Row="1" 
+                Margin="5"
+                Text="Используйте символ точки с запятой в качестве разделителя для задания нескольких IP, MAC адресов или портов."
+                TextWrapping="Wrap"
+                />
+        </Grid>
+
+        <GroupBox Grid.Row="1" Header="IP адреса источника">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                
+
                 <TextBox 
                     TextWrapping="Wrap"
                     IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
@@ -59,7 +78,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="1" Header="MAC адреса источника">
+        <GroupBox Grid.Row="2" Header="MAC адреса источника">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -100,8 +119,8 @@
                 </Grid>
             </Grid>
         </GroupBox>
-        
-        <GroupBox Grid.Row="2" Header="Порты назначения">
+
+        <GroupBox Grid.Row="3" Header="Порты назначения">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -135,8 +154,8 @@
                 </Grid>
             </Grid>
         </GroupBox>
-        
-        <GroupBox Grid.Row="3" Header="Периодичность">
+
+        <GroupBox Grid.Row="4" Header="Периодичность">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -187,7 +206,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="4" Header="Содержимое пакета">
+        <GroupBox Grid.Row="5" Header="Содержимое пакета">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -196,8 +215,8 @@
 
                 <TextBox 
                     TextWrapping="Wrap"
-                    IsEnabled="{Binding PortsDistinationTextboxEnabled}"
-                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsEnabled="{Binding ContentIsTextBoxMessage}"
+                    Text="{Binding ContentTextBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     />
 
                 <Grid Grid.Row="1" Margin="0 5 0 0">
@@ -211,22 +230,45 @@
                         Grid.Column="0"
                         Margin="0 0 20 0"
                         Content="Ввод содержимого"
-                        IsChecked="{Binding PortsDistinationIsFromTextBox}"
+                        IsChecked="{Binding ContentIsTextBoxMessage}"
                         />
                     <RadioButton
                         Grid.Column="1"
                         Margin="0 0 20 0"
                         Content="Пустое содержимое"
-                        IsChecked="{Binding PortsDistinationIsRandom}"
+                        IsChecked="{Binding ContentIsEmptyMessage}"
                         />
                     <RadioButton
                         Grid.Column="2"
                         Margin="0 0 20 0"
                         Content="Случайное содержимое"
-                        IsChecked="{Binding PortsDistinationIsRandom}"
+                        IsChecked="{Binding ContentIsRandomMessage}"
                         />
                 </Grid>
             </Grid>
         </GroupBox>
+
+        <Grid Grid.Row="6" Margin="0 5 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Margin="0 0 5 0" Background="LightPink" Visibility="{Binding ErrorMessageVisibility}">
+                <TextBlock 
+                    Margin="5 0" 
+                    Text="{Binding ErrorMessage}"
+                    VerticalAlignment="Center"
+                    FontWeight="Bold"
+                    />
+            </Grid>
+            
+            <Button
+                Grid.Column="1" 
+                Content="Добавить"
+                IsEnabled="{Binding IsInputValid}"
+                Command="{Binding AddThreadCommand}"
+                />
+        </Grid>
     </Grid>
 </Window>
