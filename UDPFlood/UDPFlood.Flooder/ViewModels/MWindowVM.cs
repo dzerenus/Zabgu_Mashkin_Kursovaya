@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using UDPFlood.Ethernet;
 using UDPFlood.Ethernet.FloodSettings;
 
 public class MWindowVM : INotifyPropertyChanged
@@ -104,11 +105,23 @@ public class MWindowVM : INotifyPropertyChanged
             OnPropertyChanged(nameof(DataGridItemSelectedIndex));
         }
     }
-
+    
+    public ICommand ClearThreadsCommand { get; }
     public ICommand AddNewThreadCommand { get; }
     public ICommand StartOrStopAttack { get; }
 
     public ObservableCollection<ThreadSettingsViewModel> ThreadsCollection { get; } = new ();
+
+    public string BomberSelectedDevice
+    {
+        get => Bomber.SelectedDevice;
+        set
+        {
+            Bomber.SelectDevice(value);
+            OnPropertyChanged(BomberSelectedDevice);
+        }
+    }
+    public UdpBomber Bomber { get; }
 
     private string _attackStatus = "ОТКЛЮЧЕНА";
     private string _attackButtonText = "💣 Начать атаку";
@@ -129,6 +142,8 @@ public class MWindowVM : INotifyPropertyChanged
 
     public MWindowVM()
     {
+        Bomber = new();
+
         AddNewThreadCommand = new RelayCommand(_ =>
         {
             var addWindow = new AddThreadWindow();
@@ -148,6 +163,12 @@ public class MWindowVM : INotifyPropertyChanged
             };
 
             addWindow.ShowDialog();
+        });
+
+        ClearThreadsCommand = new RelayCommand(_ =>
+        {
+            _threads.Clear();
+            ThreadsCollection.Clear();
         });
 
         StartOrStopAttack = new RelayCommand(x =>

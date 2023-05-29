@@ -12,4 +12,8 @@
     <ProjectReference Include="..\UDPFlood.UDPWorker\UDPFlood.UDPWorker.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sources\Icons\" />
+  </ItemGroup>
+
 </Project>

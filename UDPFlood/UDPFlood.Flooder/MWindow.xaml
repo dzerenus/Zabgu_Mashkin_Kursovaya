@@ -47,16 +47,6 @@
                 IsEnabled="{Binding IsAttackButtonEnabled}"
                 Command="{Binding StartOrStopAttack}"
                 />
-
-            <!-- Неиспользуемый код - удалить -->
-            <TextBlock Visibility="Collapsed" Grid.Column="2" VerticalAlignment="Center" Text="Потоков: "/>
-            <TextBox Visibility="Collapsed"
-                Grid.Column="3" 
-                Width="30" 
-                VerticalContentAlignment="Center" 
-                Text="{Binding ThreadCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                IsEnabled="{Binding IsInputEnabled}"
-                />
         </Grid>
 
         <Grid Grid.Row="1" Margin="0 0 0 10px">
@@ -103,34 +93,42 @@
                         </DataGrid.ColumnHeaderStyle>
                     </elements:ThreadsDataGrid>
 
-                    <Button 
-                        Grid.Row="1" 
-                        Margin="0 5 0 0"
-                        Width="150px" 
-                        HorizontalAlignment="Right" 
-                        Content="Добавить поток"
-                        Command="{Binding AddNewThreadCommand}"
-                        />
+                    <Grid 
+                        Grid.Row="1"
+                        Margin="0 5 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+
+                        <DockPanel>
+                            <TextBlock
+                                VerticalAlignment="Center">
+                                Интерфейс для атаки:
+                            </TextBlock>
+                            <ComboBox 
+                                Margin="5 0" 
+                                ItemsSource="{Binding Bomber.DeviceNames}"
+                                SelectedItem="{Binding BomberSelectedDevice}"/>
+                        </DockPanel>
+
+                        <Button 
+                            Grid.Column="2"
+                            Margin="5 0"
+                            Content="Добавить поток"
+                            Command="{Binding AddNewThreadCommand}"
+                            />
+
+                        <Button 
+                            Grid.Column="1"
+                            Margin="5 0"
+                            Content="Очистить потоки"
+                            Command="{Binding ClearThreadsCommand}"
+                            />
+                    </Grid>
                 </Grid>
             </GroupBox>
-        </Grid>
-
-        <Grid Grid.Row="1" Visibility="Collapsed">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock Grid.Column="1" Text="Статус атаки:" FontSize="16px" FontWeight="Bold" Margin="10 0 10 0" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="{Binding AttackStatus}" FontSize="16px" FontWeight="Bold" VerticalAlignment="Center"/>
-
-            <TextBlock Grid.Column="4" Text="Пакетов в секунду:" FontSize="16px" FontWeight="Bold" Margin="10 0 10 0" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="5" Text="{Binding PrevSecondPacketCount}" FontSize="16px" FontWeight="Bold" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Window>
