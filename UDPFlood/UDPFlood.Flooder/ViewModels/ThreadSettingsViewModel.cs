@@ -14,7 +14,7 @@ public class ThreadSettingsViewModel
     public string DstPortsMode { get; }
     public string PacketContentMode { get; }
 
-    public ThreadSettingsViewModel(ThreadSettings thread)
+    public ThreadSettingsViewModel(BomberThreadSettings thread)
     {
         WorkStatus = "Флудер не запущен";
         
@@ -34,10 +34,10 @@ public class ThreadSettingsViewModel
             _ => throw new InvalidOperationException()
         };
 
-        DstPortsMode = thread.Port.Mode switch 
+        DstPortsMode = thread.DestPort.Mode switch 
         {
             PortMode.Random => "Случайно",
-            PortMode.FromList => $"Задано {thread.Port.Ports?.Count()}",
+            PortMode.FromList => $"Задано {thread.DestPort.Ports?.Count()}",
             _ => throw new InvalidOperationException()
         };
 

@@ -109,12 +109,13 @@ public class MWindowVM : INotifyPropertyChanged
     public ICommand ClearThreadsCommand { get; }
     public ICommand AddNewThreadCommand { get; }
     public ICommand StartOrStopAttack { get; }
+    public ICommand OpenScanWindowCommand { get; }
 
     public ObservableCollection<ThreadSettingsViewModel> ThreadsCollection { get; } = new ();
 
     public string BomberSelectedDevice
     {
-        get => Bomber.SelectedDevice;
+        get => Bomber.SelectedDeviceName;
         set
         {
             Bomber.SelectDevice(value);
@@ -136,13 +137,22 @@ public class MWindowVM : INotifyPropertyChanged
 
     private int _dataGridItemSelectedIndex = -1;
 
-    private readonly List<ThreadSettings> _threads = new List<ThreadSettings>();
+    private readonly List<BomberThreadSettings> _threads = new List<BomberThreadSettings>();
 
     private UDPFlooder? _flooder;
 
     public MWindowVM()
     {
         Bomber = new();
+        Bomber.OnSelectedDeviceChanged += () => OnPropertyChanged(nameof(BomberSelectedDevice));
+
+        OpenScanWindowCommand = new RelayCommand(_ =>
+        {
+            var scanWindow = new NetworkScan();
+            var scanVm = scanWindow.DataContext as ScanWindowVM;
+            scanVm?.SetBomber(Bomber);
+            scanWindow.ShowDialog();
+        });
 
         AddNewThreadCommand = new RelayCommand(_ =>
         {
@@ -152,7 +162,7 @@ public class MWindowVM : INotifyPropertyChanged
             if (context == null)
                 throw new NullReferenceException("Invalid AddThreadWindow DataContext");
 
-            context.AddThread += (ThreadSettings thread) =>
+            context.AddThread += (BomberThreadSettings thread) =>
             {
                 _threads.Add(thread);
                 

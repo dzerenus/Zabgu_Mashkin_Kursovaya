@@ -38,7 +38,7 @@
                 IsEnabled="{Binding IsInputEnabled}"
                 />
 
-            <Button Grid.Column="2" Content="Анализ портов цели" Width="140px"/>
+            <Button Grid.Column="2" Content="Анализ сети" Width="140px" Command="{Binding OpenScanWindowCommand}"/>
 
             <Button
                 Grid.Column="4"

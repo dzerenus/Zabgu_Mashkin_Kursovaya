@@ -15,6 +15,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
@@ -130,7 +131,7 @@
                 <TextBox 
                     TextWrapping="Wrap"
                     IsEnabled="{Binding PortsDistinationTextboxEnabled}"
-                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="70" Margin="0,0,0,20" Grid.RowSpan="2" VerticalAlignment="Bottom"
                     />
 
                 <Grid Grid.Row="1" Margin="0 5 0 0">
@@ -155,7 +156,42 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="4" Header="Периодичность">
+        <GroupBox Grid.Row="4" Header="Порты источника">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding SourcePortIsFromTextbox}"
+                    Text="{Binding SourcePortTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="70" Margin="0,0,0,20" Grid.RowSpan="2" VerticalAlignment="Bottom"
+                    />
+
+                <Grid Grid.Row="1" Margin="0 5 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton
+                        Grid.Column="0"
+                        Margin="0 0 20 0"
+                        Content="Выбор из списка"
+                        IsChecked="{Binding SourcePortTextboxText}"
+                    />
+                    <RadioButton
+                        Grid.Column="2"
+                        Margin="0 0 20 0"
+                        Content="Случайный для каждого пакета"
+                        IsChecked="{Binding SourcePortIsRandom}"
+                        />
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="5" Header="Периодичность">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -206,7 +242,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Grid.Row="5" Header="Содержимое пакета">
+        <GroupBox Grid.Row="6" Header="Содержимое пакета">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -248,7 +284,7 @@
             </Grid>
         </GroupBox>
 
-        <Grid Grid.Row="6" Margin="0 5 0 0">
+        <Grid Grid.Row="7" Margin="0 5 0 0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="100"/>

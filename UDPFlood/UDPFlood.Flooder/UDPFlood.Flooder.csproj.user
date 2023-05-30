@@ -10,12 +10,18 @@
     <Compile Update="AddThreadWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="NetworkScan.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="AddThreadWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="NetworkScan.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

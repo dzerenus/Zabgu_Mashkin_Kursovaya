@@ -7,8 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="PcapDotNet.Base">
+      <HintPath>..\WinPcap\PcapDotNet.Base.dll</HintPath>
+    </Reference>
     <Reference Include="PcapDotNet.Core">
       <HintPath>..\WinPcap\PcapDotNet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Core.Extensions">
+      <HintPath>..\WinPcap\PcapDotNet.Core.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Packets">
+      <HintPath>..\WinPcap\PcapDotNet.Packets.dll</HintPath>
     </Reference>
   </ItemGroup>
 

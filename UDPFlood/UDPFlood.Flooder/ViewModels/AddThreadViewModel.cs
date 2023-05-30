@@ -9,7 +9,7 @@ namespace UDPFlood.Flooder.ViewModels;
 
 public class AddThreadViewModel : INotifyPropertyChanged
 {
-    public delegate void AddThreadEventArgs(ThreadSettings thread);
+    public delegate void AddThreadEventArgs(BomberThreadSettings thread);
 
     public event AddThreadEventArgs? AddThread;
 
@@ -151,6 +151,38 @@ public class AddThreadViewModel : INotifyPropertyChanged
         }
     }
 
+    public string SourcePortTextboxText
+    {
+        get => _sourcePortTextboxText;
+        set
+        {
+            _sourcePortTextboxText = value;
+            OnPropertyChanged(nameof(SourcePortTextboxText));
+            ValidateInput();
+        }
+    }
+
+    public bool SourcePortIsRandom
+    {
+        get => _sourcePortIsRandom;
+        set
+        {
+            _sourcePortIsRandom = value;
+            OnPropertyChanged(nameof(SourcePortIsRandom));
+        }
+    }
+
+    public bool SourcePortIsFromTextbox
+    {
+        get => _sourcePortIsFromTextbox;
+        set
+        {
+            _sourcePortIsFromTextbox = value;
+            OnPropertyChanged(nameof(SourcePortIsFromTextbox));
+            ValidateInput();
+        }
+    }
+
     public bool TimeIsDelayEnabled
     {
         get => _timeIsDelayEnabled;
@@ -289,6 +321,10 @@ public class AddThreadViewModel : INotifyPropertyChanged
     private string _timeLengthTextboxText = "15";
     private string _timeDelayTextboxText = "5";
 
+    private string _sourcePortTextboxText = string.Empty;
+    private bool _sourcePortIsRandom = true;
+    private bool _sourcePortIsFromTextbox = false;
+
     private string _portsDistinationTextboxText = string.Empty;
     private bool _portsDistinationTextboxEnabled = false;
     private bool _portDistinationIsFromTextBox = false;
@@ -340,7 +376,11 @@ public class AddThreadViewModel : INotifyPropertyChanged
             : ContentIsTextBoxMessage ? new ContentSettings(ContentMode.FromContent, ContentTextBoxText)
             : throw new InvalidOperationException();
 
-        AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, macSettings));
+        var srcPortSettings = SourcePortIsRandom ? new PortSettings(PortMode.Random)
+            : SourcePortIsFromTextbox ? new PortSettings(PortMode.FromList, SourcePortTextboxText.Split(";").Select(int.Parse))
+            : throw new InvalidOperationException();
+
+        AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, srcPortSettings, macSettings));
     }
 
     private void ValidateInput()
@@ -365,6 +405,18 @@ public class AddThreadViewModel : INotifyPropertyChanged
                 if (!Ethernet.Validate.IsValidMAC(part))
                 {
                     ErrorMessage = "Неверно заданы MAC источника!";
+                    return;
+                }
+        }
+
+        if (SourcePortIsFromTextbox)
+        {
+            var parts = PortsDistinationTextboxText.Split(";");
+
+            foreach (var part in parts)
+                if (!Ethernet.Validate.IsValidPort(part))
+                {
+                    ErrorMessage = "Неверно заданы порты источника!";
                     return;
                 }
         }
