@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -12,6 +13,8 @@ public class AddThreadViewModel : INotifyPropertyChanged
     public delegate void AddThreadEventArgs(BomberThreadSettings thread);
 
     public event AddThreadEventArgs? AddThread;
+
+    public AddThreadInput DestIp { get; }
 
     public string IPSourceAddressesTextboxText
     {
@@ -344,6 +347,17 @@ public class AddThreadViewModel : INotifyPropertyChanged
 
     public AddThreadViewModel()
     {
+        var isIpInputValid = new Predicate<string>(x => x.Split(';').All(s => Ethernet.Validate.IsValidIP(s) && s.Length > 0));
+
+        var destIpComboBoxItems = new List<ComboBoxItem>() 
+        {
+            new("Случайный IP назначения для каждого пакета", 0),
+            new("Выбор из списка", 1)
+        };
+
+        DestIp = new(destIpComboBoxItems, destIpComboBoxItems[^1], isIpInputValid);
+
+
         AddThreadCommand = new RelayCommand(x => DoAddThread());
     }
 
@@ -385,6 +399,12 @@ public class AddThreadViewModel : INotifyPropertyChanged
 
     private void ValidateInput()
     {
+        if (DestIp.IsError)
+        {
+            ErrorMessage = "Неверно заданы IP назначения!";
+            return;
+        }
+
         if (IPSourceIsFromTextBox)
         {
             var parts = IPSourceAddressesTextboxText.Split(";");
@@ -462,6 +482,7 @@ public class AddThreadInput : INotifyPropertyChanged
         set
         {
             _textboxValue = value;
+            IsError = !IsValidInput();
             OnPropertyChanged(nameof(TextBoxValue));
         }
     }
@@ -470,6 +491,7 @@ public class AddThreadInput : INotifyPropertyChanged
         get => _isTextBoxEnabled;
         set
         {
+            IsError = !IsValidInput();
             _isTextBoxEnabled = value;
             OnPropertyChanged(nameof(IsTextBoxEnabled));
         }
@@ -483,17 +505,35 @@ public class AddThreadInput : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsError));
         }
     }
+    public ComboBoxItem SelectedItem
+    {
+        get => _selectedItem;
+        set
+        {
+            _selectedItem = value;
+            IsTextBoxEnabled = TextBoxEnabledWhen.Value == value.Value;
+            OnPropertyChanged(nameof(SelectedItem));
+            IsError = !IsValidInput();
+        }
+    }
+    public ComboBoxItem TextBoxEnabledWhen { get; }
+    public IEnumerable<ComboBoxItem> ComboboxItems { get; }
 
+    private Predicate<string> _isInputValid;
+    private ComboBoxItem _selectedItem;
     private string _textboxValue = string.Empty;
     private bool _isTextBoxEnabled;
     private bool _isError;
 
-    public delegate bool IsValidInputDelegate(string input);
-    private IsValidInputDelegate _checkError;
-
-    public AddThreadInput()
+    public AddThreadInput(IEnumerable<ComboBoxItem> comboBoxItems, ComboBoxItem textBoxEnabledItem, Predicate<string> validator)
     {
+        if (!comboBoxItems.Any())
+            throw new NullReferenceException();
 
+        ComboboxItems = comboBoxItems;
+        TextBoxEnabledWhen = textBoxEnabledItem;
+        _selectedItem = comboBoxItems.First();
+        _isInputValid = validator;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -502,4 +542,26 @@ public class AddThreadInput : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new(prop));
     }
+
+    private bool IsValidInput()
+    {
+        if (!IsTextBoxEnabled)
+            return true;
+
+        return _isInputValid(TextBoxValue);
+    }
+}
+
+public class ComboBoxItem
+{
+    public string Text { get; }
+    public int Value;
+
+    public ComboBoxItem(string text, int value)
+    {
+        Text = text;
+        Value = value;
+    }
+
+    public override string ToString() => Text;
 }

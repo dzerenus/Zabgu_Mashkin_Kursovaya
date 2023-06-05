@@ -9,6 +9,18 @@
     <Window.DataContext>
         <vms:AddThreadViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="ComboBoxedTextBox" TargetType="TextBox">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsError}" Value="True">
+                    <Setter Property="Background" Value="#fcd4d4"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsError}" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -81,19 +93,26 @@
             </GroupBox>
 
             <GroupBox Grid.Row="1" Header="IP адреса назначения">
-                <Grid Margin="5">
+                <Grid Margin="5" DataContext="{Binding DestIp}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
                     <TextBox 
-                    TextWrapping="Wrap"
-                    IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
-                    Text="{Binding IPSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    />
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
 
-                    <ComboBox Grid.Row="1" Margin="0 5 0 0"></ComboBox>
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
+                        />
                 </Grid>
             </GroupBox>
         </UniformGrid>
@@ -200,7 +219,7 @@
                         Grid.Column="0"
                         Margin="0 0 20 0"
                         Content="Выбор из списка"
-                        IsChecked="{Binding SourcePortTextboxText}"
+                        IsChecked="{Binding SourcePortIsFromTextbox}"
                     />
                     <RadioButton
                         Grid.Column="2"
