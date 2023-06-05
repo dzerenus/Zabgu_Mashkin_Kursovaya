@@ -14,16 +14,19 @@ using System.Threading.Tasks;
 namespace UDPFlood.Ethernet;
 
 public delegate void NetworkScannerEventArgs();
+public delegate void NetworkScannerProgressEventArgs(int current);
 
 public class Scanner
 {
     public bool ScanInProgress { get => _inProcess; }
     public List<ArpRow> ArpTable { get; } = new();
-
-    public event NetworkScannerEventArgs? OnArpAdded;
     
     private bool _inProcess = false;
     private LivePacketDevice _device;
+    
+    public event NetworkScannerEventArgs? OnArpAdded;
+    public event NetworkScannerEventArgs? OnScanEnded;
+    public event NetworkScannerProgressEventArgs? OnArpProgressChanged;
 
     public Scanner(LivePacketDevice device)
     {
@@ -61,9 +64,13 @@ public class Scanner
         var parts = srcIp.Split('.');
 
         for (int i = 0; i < 256 && _inProcess; i++)
+        {
             SendArpRequest(parts[0] + '.' + parts[1] + '.' + parts[2] + '.' + i);
+            OnArpProgressChanged?.Invoke(i);
+        }
 
         _inProcess = false;
+        OnScanEnded?.Invoke();
     }
 
     private void RecieveArp(string srcIp)
@@ -113,16 +120,7 @@ public class Scanner
         };
 
         var builder = new PacketBuilder(ethernetLayer, arpLayer);
-
-        try
-        {
-            communicator.SendPacket(builder.Build(DateTime.Now));
-        }
-
-        catch (InvalidOperationException)
-        {
-            throw new InvalidOperationException();
-        }
+        communicator.SendPacket(builder.Build(DateTime.Now));
     }
 
     private byte[] GetIpBytes(string ip)

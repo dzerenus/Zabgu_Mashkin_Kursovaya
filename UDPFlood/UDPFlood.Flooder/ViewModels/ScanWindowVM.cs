@@ -13,6 +13,9 @@ namespace UDPFlood.Flooder.ViewModels;
 
 public class ScanWindowVM : INotifyPropertyChanged
 {
+    public bool IsScanButtonEnabled { get; private set; } = false;
+
+    public int ScanProgress { get; private set; } = 0;
     public string SourceIP { get => Bomber?.DeviceSourceAddress.ToString() ?? string.Empty; }
 
     public string SelectedInterface
@@ -42,6 +45,9 @@ public class ScanWindowVM : INotifyPropertyChanged
     {
         try
         {
+            IsScanButtonEnabled = !IsScanButtonEnabled;
+            OnPropertyChanged(nameof(IsScanButtonEnabled));
+
             if (Bomber == null)
                 return;
 
@@ -62,12 +68,28 @@ public class ScanWindowVM : INotifyPropertyChanged
     {
         Bomber = bomber;
         ArpTable = new(Bomber.NetworkScanner.ArpTable);
-
         Bomber.OnSourceIpChanged += () => OnPropertyChanged(nameof(SourceIP));
+
+        IsScanButtonEnabled = !Bomber.NetworkScanner.ScanInProgress;
+
         Bomber.NetworkScanner.OnArpAdded += () =>
         {
             ArpTable = new(Bomber.NetworkScanner.ArpTable);
             OnPropertyChanged(nameof(ArpTable));
+        };
+
+        Bomber.NetworkScanner.OnArpProgressChanged += progress =>
+        {
+            ScanProgress = Convert.ToInt32(Convert.ToDouble(progress) / 256 * 100);
+            OnPropertyChanged(nameof(ScanProgress));
+        };
+
+        Bomber.NetworkScanner.OnScanEnded += () =>
+        {
+            IsScanButtonEnabled = true;
+            ScanProgress = 0;
+            OnPropertyChanged(nameof(IsScanButtonEnabled));
+            OnPropertyChanged(nameof(ScanProgress));
         };
 
         OnPropertyChanged("");

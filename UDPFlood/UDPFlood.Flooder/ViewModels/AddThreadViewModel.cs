@@ -453,3 +453,53 @@ public class AddThreadViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
 }
+
+public class AddThreadInput : INotifyPropertyChanged
+{
+    public string TextBoxValue
+    {
+        get => _textboxValue;
+        set
+        {
+            _textboxValue = value;
+            OnPropertyChanged(nameof(TextBoxValue));
+        }
+    }
+    public bool IsTextBoxEnabled
+    {
+        get => _isTextBoxEnabled;
+        set
+        {
+            _isTextBoxEnabled = value;
+            OnPropertyChanged(nameof(IsTextBoxEnabled));
+        }
+    }
+    public bool IsError
+    {
+        get => _isError;
+        private set
+        {
+            _isError = value;
+            OnPropertyChanged(nameof(IsError));
+        }
+    }
+
+    private string _textboxValue = string.Empty;
+    private bool _isTextBoxEnabled;
+    private bool _isError;
+
+    public delegate bool IsValidInputDelegate(string input);
+    private IsValidInputDelegate _checkError;
+
+    public AddThreadInput()
+    {
+
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public void OnPropertyChanged(string prop)
+    {
+        PropertyChanged?.Invoke(this, new(prop));
+    }
+}

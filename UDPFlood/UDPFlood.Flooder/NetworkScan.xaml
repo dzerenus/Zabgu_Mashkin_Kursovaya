@@ -14,6 +14,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -29,7 +30,7 @@
                     Margin="0 0 5 0">
                     Выбранное устройство:
                 </TextBlock>
-                <ComboBox ItemsSource="{Binding Bomber.DeviceNames}" SelectedItem="{Binding SelectedInterface}"/>
+                <ComboBox IsEnabled="{Binding IsScanButtonEnabled}" ItemsSource="{Binding Bomber.DeviceNames}" SelectedItem="{Binding SelectedInterface}"/>
             </DockPanel>
 
             <TextBlock
@@ -40,7 +41,7 @@
                 Text="{Binding SourceIP}">
             </TextBlock>
 
-            <Button Grid.Column="2" Command="{Binding ScanCommand}">
+            <Button Grid.Column="2" Command="{Binding ScanCommand}" IsEnabled="{Binding IsScanButtonEnabled}">
                 Начать сканирование
             </Button>
         </Grid>
@@ -51,5 +52,13 @@
                 <DataGridTextColumn Header="MAC-Адрес устройства" Binding="{Binding Path=MacString}" Width="250"/>
             </DataGrid.Columns>
         </DataGrid>
+
+
+        <ProgressBar Grid.Row="2" Height="20px" Value="{Binding ScanProgress, Mode=OneWay}"/>
+        <TextBlock 
+            Grid.Row="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Text="Прогресс сканирования"/>
     </Grid>
 </Window>

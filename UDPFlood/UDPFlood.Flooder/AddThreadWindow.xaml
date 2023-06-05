@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:UDPFlood.Flooder.ViewModels"
         mc:Ignorable="d"
-        Title="Добавить новый поток" Height="700px" Width="600px" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        Title="Добавить новый поток" Height="700px" Width="1000px" ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Window.DataContext>
         <vms:AddThreadViewModel/>
     </Window.DataContext>
@@ -37,47 +37,68 @@
                 />
         </Grid>
 
-        <GroupBox Grid.Row="1" Header="IP адреса источника">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+        <UniformGrid Grid.Row="1" Columns="2">
+            <GroupBox Grid.Row="1" Header="IP адреса источника">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-                <TextBox 
+                    <TextBox 
                     TextWrapping="Wrap"
                     IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
                     Text="{Binding IPSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     />
 
-                <Grid Grid.Row="1" Margin="0 5 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="1" Margin="0 5 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <RadioButton
+                        <RadioButton
                         Grid.Column="0"
                         Margin="0 0 20 0"
                         Content="Выбор из списка"
                         IsChecked="{Binding IPSourceIsFromTextBox}"
                         />
-                    <RadioButton
+                        <RadioButton
                         Grid.Column="1"
                         Content="Использовать мой"
                         Margin="0 0 20 0"
                         IsChecked="{Binding IPSourceIsMine}"
                         />
-                    <RadioButton
+                        <RadioButton
                         Grid.Column="2"
                         Margin="0 0 20 0"
                         Content="Случайный для каждого пакета"
                         IsChecked="{Binding IPSourceIsRandom}"
                         />
+                    </Grid>
                 </Grid>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="IP адреса назначения">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox 
+                    TextWrapping="Wrap"
+                    IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
+                    Text="{Binding IPSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    />
+
+                    <ComboBox Grid.Row="1" Margin="0 5 0 0"></ComboBox>
+                </Grid>
+            </GroupBox>
+        </UniformGrid>
+
+        
 
         <GroupBox Grid.Row="2" Header="MAC адреса источника">
             <Grid Margin="5">
