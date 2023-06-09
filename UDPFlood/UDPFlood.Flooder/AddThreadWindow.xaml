@@ -27,7 +27,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
@@ -51,49 +51,31 @@
 
         <UniformGrid Grid.Row="1" Columns="2">
             <GroupBox Grid.Row="1" Header="IP адреса источника">
-                <Grid Margin="5">
+                <Grid Margin="5" DataContext="{Binding SourceIpField}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
                     <TextBox 
-                    TextWrapping="Wrap"
-                    IsEnabled="{Binding IPSourceAddressesTextboxEnabled}"
-                    Text="{Binding IPSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    />
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
 
-                    <Grid Grid.Row="1" Margin="0 5 0 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <RadioButton
-                        Grid.Column="0"
-                        Margin="0 0 20 0"
-                        Content="Выбор из списка"
-                        IsChecked="{Binding IPSourceIsFromTextBox}"
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
                         />
-                        <RadioButton
-                        Grid.Column="1"
-                        Content="Использовать мой"
-                        Margin="0 0 20 0"
-                        IsChecked="{Binding IPSourceIsMine}"
-                        />
-                        <RadioButton
-                        Grid.Column="2"
-                        Margin="0 0 20 0"
-                        Content="Случайный для каждого пакета"
-                        IsChecked="{Binding IPSourceIsRandom}"
-                        />
-                    </Grid>
                 </Grid>
             </GroupBox>
 
             <GroupBox Grid.Row="1" Header="IP адреса назначения">
-                <Grid Margin="5" DataContext="{Binding DestIp}">
+                <Grid Margin="5" DataContext="{Binding DestinationIpField}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
@@ -117,121 +99,107 @@
             </GroupBox>
         </UniformGrid>
 
-        
+        <UniformGrid Grid.Row="2" Columns="2">
+            <GroupBox Grid.Row="2" Header="MAC адреса источника">
+                <Grid Margin="5" DataContext="{Binding SourceMacField}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-        <GroupBox Grid.Row="2" Header="MAC адреса источника">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+                    <TextBox 
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
 
-                <TextBox 
-                    TextWrapping="Wrap"
-                    IsEnabled="{Binding MACSourceAddressesTextboxEnabled}"
-                    Text="{Binding MACSourceAddressesTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    />
-
-                <Grid Grid.Row="1" Margin="0 5 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton
-                        Grid.Column="0"
-                        Margin="0 0 20 0"
-                        Content="Выбор из списка"
-                        IsChecked="{Binding MACSourceIsFromTextBox}"
-                        />
-                    <RadioButton
-                        Grid.Column="1"
-                        Content="Использовать мой"
-                        Margin="0 0 20 0"
-                        IsChecked="{Binding MACSourceIsMine}"
-                        />
-                    <RadioButton
-                        Grid.Column="2"
-                        Margin="0 0 20 0"
-                        Content="Случайный для каждого пакета"
-                        IsChecked="{Binding MACSourceIsRandom}"
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
                         />
                 </Grid>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
 
-        <GroupBox Grid.Row="3" Header="Порты назначения">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+            <GroupBox Grid.Row="2" Header="MAC адреса назначения">
+                <Grid Margin="5" DataContext="{Binding DestinationMacField}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-                <TextBox 
-                    TextWrapping="Wrap"
-                    IsEnabled="{Binding PortsDistinationTextboxEnabled}"
-                    Text="{Binding PortsDistinationTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="70" Margin="0,0,0,20" Grid.RowSpan="2" VerticalAlignment="Bottom"
-                    />
+                    <TextBox 
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
 
-                <Grid Grid.Row="1" Margin="0 5 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton
-                        Grid.Column="0"
-                        Margin="0 0 20 0"
-                        Content="Выбор из списка"
-                        IsChecked="{Binding PortsDistinationIsFromTextBox}"
-                    />
-                    <RadioButton
-                        Grid.Column="2"
-                        Margin="0 0 20 0"
-                        Content="Случайный для каждого пакета"
-                        IsChecked="{Binding PortsDistinationIsRandom}"
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
                         />
                 </Grid>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
+        </UniformGrid>
 
-        <GroupBox Grid.Row="4" Header="Порты источника">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+        <UniformGrid Grid.Row="3" Columns="2">
+            <GroupBox Grid.Row="2" Header="Порты источника">
+                <Grid Margin="5" DataContext="{Binding SourcePortField}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-                <TextBox 
-                    TextWrapping="Wrap"
-                    IsEnabled="{Binding SourcePortIsFromTextbox}"
-                    Text="{Binding SourcePortTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="70" Margin="0,0,0,20" Grid.RowSpan="2" VerticalAlignment="Bottom"
-                    />
+                    <TextBox 
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
 
-                <Grid Grid.Row="1" Margin="0 5 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton
-                        Grid.Column="0"
-                        Margin="0 0 20 0"
-                        Content="Выбор из списка"
-                        IsChecked="{Binding SourcePortIsFromTextbox}"
-                    />
-                    <RadioButton
-                        Grid.Column="2"
-                        Margin="0 0 20 0"
-                        Content="Случайный для каждого пакета"
-                        IsChecked="{Binding SourcePortIsRandom}"
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
                         />
                 </Grid>
-            </Grid>
-        </GroupBox>
+            </GroupBox>
 
-        <GroupBox Grid.Row="5" Header="Периодичность">
+            <GroupBox Grid.Row="2" Header="Порты назначения">
+                <Grid Margin="5" DataContext="{Binding DestinationPortField}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox 
+                        TextWrapping="Wrap"
+                        Style="{DynamicResource ComboBoxedTextBox}"
+                        IsEnabled="{Binding IsTextBoxEnabled}"
+                        Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        >
+                    </TextBox>
+
+                    <ComboBox 
+                        Grid.Row="1" 
+                        Margin="0 5 0 0"
+                        ItemsSource="{Binding ComboboxItems}"
+                        SelectedItem="{Binding SelectedItem}"
+                        />
+                </Grid>
+            </GroupBox>
+        </UniformGrid>
+
+        <GroupBox Grid.Row="4" Header="Периодичность">
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -283,7 +251,7 @@
         </GroupBox>
 
         <GroupBox Grid.Row="6" Header="Содержимое пакета">
-            <Grid Margin="5">
+            <Grid Margin="5" DataContext="{Binding ContentField}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
@@ -291,36 +259,18 @@
 
                 <TextBox 
                     TextWrapping="Wrap"
-                    IsEnabled="{Binding ContentIsTextBoxMessage}"
-                    Text="{Binding ContentTextBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{DynamicResource ComboBoxedTextBox}"
+                    IsEnabled="{Binding IsTextBoxEnabled}"
+                    Text="{Binding TextBoxValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    >
+                </TextBox>
+
+                <ComboBox 
+                    Grid.Row="1" 
+                    Margin="0 5 0 0"
+                    ItemsSource="{Binding ComboboxItems}"
+                    SelectedItem="{Binding SelectedItem}"
                     />
-
-                <Grid Grid.Row="1" Margin="0 5 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton
-                        Grid.Column="0"
-                        Margin="0 0 20 0"
-                        Content="Ввод содержимого"
-                        IsChecked="{Binding ContentIsTextBoxMessage}"
-                        />
-                    <RadioButton
-                        Grid.Column="1"
-                        Margin="0 0 20 0"
-                        Content="Пустое содержимое"
-                        IsChecked="{Binding ContentIsEmptyMessage}"
-                        />
-                    <RadioButton
-                        Grid.Column="2"
-                        Margin="0 0 20 0"
-                        Content="Случайное содержимое"
-                        IsChecked="{Binding ContentIsRandomMessage}"
-                        />
-                </Grid>
             </Grid>
         </GroupBox>
 
