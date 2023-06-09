@@ -30,7 +30,6 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeIsDelayEnabled = value;
             OnPropertyChanged(nameof(TimeIsDelayEnabled));
-            ValidateInput();
         }
     }
     public bool TimeIsDelayDisabled
@@ -49,7 +48,6 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeEverySecondsTextboxText = value;
             OnPropertyChanged(nameof(TimeEverySecondsTextboxText));
-            ValidateInput();
         }
     }
     public string TimeLengthTextboxText
@@ -59,7 +57,6 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeLengthTextboxText = value;
             OnPropertyChanged(nameof(TimeLengthTextboxText));
-            ValidateInput();
         }
     }
     public string TimeDelayTextboxText
@@ -69,7 +66,18 @@ public class AddThreadViewModel : INotifyPropertyChanged
         {
             _timeDelayTextboxText = value;
             OnPropertyChanged(nameof(TimeDelayTextboxText));
-            ValidateInput();
+        }
+    }
+    public string Ttl
+    {
+        get => _ttl.ToString();
+        set
+        {
+            if (!int.TryParse(value, out var ttl) || ttl < 0 || ttl > 255)
+                return;
+            
+            _ttl = ttl;
+            OnPropertyChanged(nameof(Ttl));
         }
     }
 
@@ -79,6 +87,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
     private string _timeEverySecondsTextboxText = "60";
     private string _timeLengthTextboxText = "15";
     private string _timeDelayTextboxText = "5";
+    private int _ttl = 100;
 
     public AddThreadViewModel()
     {
@@ -181,6 +190,15 @@ public class AddThreadViewModel : INotifyPropertyChanged
             return;
         }
 
+        if (TimeIsDelayEnabled
+            && (!int.TryParse(TimeDelayTextboxText, out int delay)
+            || !int.TryParse(TimeEverySecondsTextboxText, out int every)
+            || !int.TryParse(TimeLengthTextboxText, out var length)
+            || delay > length))
+        {
+            MessageBox.Show("Время задано неверно", "Ошибка!");
+            return;
+        }
 
         var srcIpMode = (IpMode)SourceIpField.SelectedItem.Value;
         var dstIpMode = (IpMode)DestinationIpField.SelectedItem.Value;
@@ -197,31 +215,18 @@ public class AddThreadViewModel : INotifyPropertyChanged
         var dstIp = new IpSettings(dstIpMode, dstIpMode == IpMode.FromList ? DestinationIpField.TextBoxValue.Split(';') : null);
 
         var srcMac = new MacSettings(srcMacMode, srcMacMode == MacMode.FromList ? SourceMacField.TextBoxValue.Split(';') : null);
-        var dstMac = new MacSettings(srcMacMode, srcMacMode == MacMode.FromList ? SourceMacField.TextBoxValue.Split(';') : null);
+        var dstMac = new MacSettings(dstMacMode, dstMacMode == MacMode.FromList ? DestinationMacField.TextBoxValue.Split(';') : null);
 
-        var macSettings = MACSourceIsMine ? new MacSettings(MacMode.MySelf)
-            : MACSourceIsRandom ? new MacSettings(MacMode.Random)
-            : MACSourceIsFromTextBox ? new MacSettings(MacMode.FromList, MACSourceAddressesTextboxText.Split(";"))
-            : throw new InvalidOperationException();
-
-        var portSettings = PortsDistinationIsRandom ? new PortSettings(PortMode.Random)
-            : PortsDistinationIsFromTextBox ? new PortSettings(PortMode.FromList, PortsDistinationTextboxText.Split(";").Select(int.Parse))
-            : throw new InvalidOperationException();
+        var srcPort = new PortSettings(srcPortMode, srcPortMode == PortMode.FromList ? SourcePortField.TextBoxValue.Split(';').Select(int.Parse) : null);
+        var dstPort = new PortSettings(dstPortMode, dstPortMode == PortMode.FromList ? DestinationPortField.TextBoxValue.Split(';').Select(int.Parse) : null);
 
         var delaySettings = TimeIsDelayEnabled 
             ? new DelaySettings(true, int.Parse(TimeEverySecondsTextboxText), int.Parse(TimeLengthTextboxText), int.Parse(TimeDelayTextboxText)) 
             : new DelaySettings(false, 0, 0, 0);
 
-        var contentSettings = ContentIsEmptyMessage ? new ContentSettings(ContentMode.Empty)
-            : ContentIsRandomMessage ? new ContentSettings(ContentMode.Random)
-            : ContentIsTextBoxMessage ? new ContentSettings(ContentMode.FromContent, ContentTextBoxText)
-            : throw new InvalidOperationException();
+        var contentSettings = new ContentSettings(contentMode, contentMode == ContentMode.FromContent ? ContentField.TextBoxValue : null);
 
-        var srcPortSettings = SourcePortIsRandom ? new PortSettings(PortMode.Random)
-            : SourcePortIsFromTextbox ? new PortSettings(PortMode.FromList, SourcePortTextboxText.Split(";").Select(int.Parse))
-            : throw new InvalidOperationException();
-
-        AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, srcPortSettings, macSettings));
+        //AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, srcPortSettings, macSettings));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
