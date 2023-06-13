@@ -1,30 +1,30 @@
-﻿using PcapDotNet.Base;
+﻿using System.Net;
 using PcapDotNet.Core;
 using PcapDotNet.Core.Extensions;
-using System.Linq;
-using System.Net;
 using UDPFlood.Ethernet.FloodSettings;
 
 namespace UDPFlood.Ethernet;
 
 public delegate void BomberEventArgs();
+public delegate void BomberThreadsEventArgs(IEnumerable<BomberThreadInfo> threads);
 
 public class UdpBomber
 {
-    public event BomberEventArgs? OnSelectedDeviceChanged;
-    public event BomberEventArgs? OnThreadListChanged;
     public event BomberEventArgs? OnSourceIpChanged;
+    public event BomberEventArgs? OnSelectedDeviceChanged;
+    public event BomberThreadsEventArgs? OnThreadsChanged;
+
+    public bool IsBomberWork => _threads.All(x => x.IsFlooderWork);
 
     public string SelectedDeviceName { get => GetDeviceName(_selectedDevice); }
     public IReadOnlyList<string> DeviceNames { get => _devices.Select(GetDeviceName).ToList(); }
-    public IReadOnlyList<BomberThreadSettings> Threads { get => _threads; }
     public IPAddress DeviceSourceAddress { get; private set; }
     public Scanner NetworkScanner { get => _networkScanner; }
 
     private Scanner _networkScanner;
     private LivePacketDevice _selectedDevice;
     private readonly IReadOnlyList<LivePacketDevice> _devices;
-    private readonly List<BomberThreadSettings> _threads;
+    private readonly List<BomberThread> _threads;
 
     public UdpBomber()
     {
@@ -58,26 +58,39 @@ public class UdpBomber
         OnSourceIpChanged?.Invoke();
     }
 
-    public void RemoveThread(BomberThreadSettings thread)
+    public void RemoveThread(Guid threadId)
     {
+        var thread = _threads.Where(x => x.ThreadId == threadId).FirstOrDefault();
+
+        if (thread == null)
+            throw new InvalidOperationException();
+
+        if (thread.IsFlooderWork)
+            thread.Stop();
+
         _threads.Remove(thread);
-        OnThreadListChanged?.Invoke();
+
+        OnThreadsChanged?.Invoke(GenerateThreadInfo());
     }
 
-    public void AddThread(BomberThreadSettings thread)
+    public void AddThread(BomberThreadSettings settings)
     {
+        var thread = new BomberThread(settings);
+
+        thread.OnThreadChanged += () => OnThreadsChanged?.Invoke(GenerateThreadInfo());
+
         _threads.Add(thread);
-        OnThreadListChanged?.Invoke();
+        OnThreadsChanged?.Invoke(GenerateThreadInfo());
     }
 
     public void Start()
     {
-        throw new NotImplementedException();
+        _threads.ForEach(x => new Thread(() => x.Start(_selectedDevice)).Start());
     }
 
     public void Stop()
     {
-        throw new NotImplementedException();
+        _threads.ForEach(x => x.Stop());
     }
 
     private static IReadOnlyList<LivePacketDevice> GetDeviceList()
@@ -99,4 +112,17 @@ public class UdpBomber
 
     private static string GetDeviceName(LivePacketDevice device)
         => device.Description.Split("'")[1];
+
+    private IEnumerable<BomberThreadInfo> GenerateThreadInfo()
+    {
+        var threadsInfo = new List<BomberThreadInfo>();
+
+        foreach (var thread in _threads)
+        {
+            var threadInfo = new BomberThreadInfo(thread.ThreadId, thread.Status, thread.LastPacketSendedAt, thread.Settings, thread.PacketSendedCount);
+            threadsInfo.Add(threadInfo);
+        }
+
+        return threadsInfo;
+    }
 }

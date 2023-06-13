@@ -3,11 +3,23 @@
 public class DelaySettings
 {
     public bool IsDelay { get; }
+
+    /// <summary>
+    /// Каждые {Every} секунд;
+    /// </summary>
     public int Every { get; }
-    public int Length { get; }
+    
+    /// <summary>
+    /// Количество пакетов в одной партии
+    /// </summary>
+    public int PacketCount { get; }
+    
+    /// <summary>
+    /// С задержкой {Delay} между пакетами;
+    /// </summary>
     public int Delay { get; }
 
-    public DelaySettings(bool isDelay, int every, int length, int delay)
+    public DelaySettings(bool isDelay, int every, int count, int delay)
     {
         IsDelay = isDelay;
 
@@ -17,7 +29,7 @@ public class DelaySettings
         }
 
         Every = every;
-        Length = length;
+        PacketCount = count;
         Delay = delay;
     }
 }

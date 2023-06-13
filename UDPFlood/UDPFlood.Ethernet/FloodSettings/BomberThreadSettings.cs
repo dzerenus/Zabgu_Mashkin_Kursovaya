@@ -4,18 +4,33 @@ public sealed class BomberThreadSettings
 {
     public ContentSettings Content { get; }
     public DelaySettings Delay { get; }
-    public IpSettings Ip { get; }
-    public PortSettings DestPort { get; }
-    public PortSettings SrcPort { get; }
-    public MacSettings Mac { get; }
+    public IpSettings SourceIp { get; }
+    public IpSettings DestinationIp { get; }
+    public MacSettings SourceMac { get; }
+    public MacSettings DestinationMac { get; }
+    public PortSettings SourcePort { get; }
+    public PortSettings DestinationPort { get; }
+    public byte Ttl { get; }
 
-    public BomberThreadSettings(ContentSettings content, DelaySettings delay, IpSettings ip, PortSettings port, PortSettings srcPort, MacSettings mac)
+    public BomberThreadSettings(
+        ContentSettings content, 
+        DelaySettings delay, 
+        IpSettings sourceIp, 
+        IpSettings destinationIp, 
+        MacSettings sourceMac, 
+        MacSettings destinationMac, 
+        PortSettings sourcePort, 
+        PortSettings destinationPort,
+        byte ttl)
     {
         Content = content;
         Delay = delay;
-        Ip = ip;
-        DestPort = port;
-        SrcPort = srcPort;
-        Mac = mac;
+        SourceIp = sourceIp;
+        DestinationIp = destinationIp;
+        SourceMac = sourceMac;
+        DestinationMac = destinationMac;
+        SourcePort = sourcePort;
+        DestinationPort = destinationPort;
+        Ttl = ttl;
     }
 }

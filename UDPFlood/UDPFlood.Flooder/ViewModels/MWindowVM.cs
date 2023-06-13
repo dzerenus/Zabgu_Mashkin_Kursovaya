@@ -4,38 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using UDPFlood.Ethernet;
 using UDPFlood.Ethernet.FloodSettings;
 
 public class MWindowVM : INotifyPropertyChanged
 {
-    public string AttackStatus
-    {
-        get => _attackStatus;
-        set
-        {
-            _attackStatus = value;
-            OnPropertyChanged(nameof(AttackStatus));
-        }
-    }
-    public string ThreadCount 
-    {
-        get => _threadCount.ToString();
-        set 
-        {
-            var input = value;
-
-            if (input.Length > 1)
-                input = input[^1].ToString();
-
-            if (int.TryParse(input, out var threadCount) && threadCount > 0 && threadCount < 10)
-            {
-                _threadCount = threadCount;
-                OnPropertyChanged(nameof(ThreadCount));
-            }    
-        }
-    }
     public bool IsInputEnabled
     {
         get => _isInputEnabled;
@@ -54,15 +29,6 @@ public class MWindowVM : INotifyPropertyChanged
             OnPropertyChanged(nameof(IsAttackButtonEnabled));
         }
     }
-    public int PrevSecondPacketCount
-    {
-        get => _prevSecondPacketCount;
-        set
-        {
-            _prevSecondPacketCount = value;
-            OnPropertyChanged(nameof(PrevSecondPacketCount));
-        }
-    }
     public string AttackButtonText 
     { 
         get => _attackButtonText;
@@ -70,30 +36,6 @@ public class MWindowVM : INotifyPropertyChanged
         {
             _attackButtonText = value;
             OnPropertyChanged(nameof(AttackButtonText));
-        }
-    }
-    public string IpAddress
-    {
-        get => _ipAddress;
-        set
-        {
-            var validated = ValidateIpAddress(value);
-
-            if (validated != null)
-            {
-                _ipAddress = validated;
-                OnPropertyChanged(nameof(IpAddress));
-
-                if (IsValidIpv4(value))
-                {
-                    IsAttackButtonEnabled = true;
-                }
-
-                else
-                {
-                    IsAttackButtonEnabled = false;
-                }
-            }
         }
     }
     public int DataGridItemSelectedIndex 
@@ -111,7 +53,7 @@ public class MWindowVM : INotifyPropertyChanged
     public ICommand StartOrStopAttack { get; }
     public ICommand OpenScanWindowCommand { get; }
 
-    public ObservableCollection<ThreadSettingsViewModel> ThreadsCollection { get; } = new ();
+    public ObservableCollection<ThreadInfoViewModel> ThreadsCollection { get; set; } = new ();
 
     public string BomberSelectedDevice
     {
@@ -126,7 +68,7 @@ public class MWindowVM : INotifyPropertyChanged
 
     private string _attackStatus = "ОТКЛЮЧЕНА";
     private string _attackButtonText = "💣 Начать атаку";
-    private bool _isAttackButtonEnabled = false;
+    private bool _isAttackButtonEnabled = true;
     private bool _isInputEnabled = true;
     private int _threadCount = 9;
     private string _ipAddress = "192.168.0.90";
@@ -139,12 +81,17 @@ public class MWindowVM : INotifyPropertyChanged
 
     private readonly List<BomberThreadSettings> _threads = new List<BomberThreadSettings>();
 
-    private UDPFlooder? _flooder;
-
     public MWindowVM()
     {
         Bomber = new();
         Bomber.OnSelectedDeviceChanged += () => OnPropertyChanged(nameof(BomberSelectedDevice));
+
+        Bomber.OnThreadsChanged += threadsInfo =>
+        {
+            var threadInfoViewModels = threadsInfo.Select(x => new ThreadInfoViewModel(x)).ToList();
+            ThreadsCollection = new ObservableCollection<ThreadInfoViewModel>(threadInfoViewModels);
+            OnPropertyChanged(nameof(ThreadsCollection));
+        };
 
         OpenScanWindowCommand = new RelayCommand(_ =>
         {
@@ -157,18 +104,13 @@ public class MWindowVM : INotifyPropertyChanged
         AddNewThreadCommand = new RelayCommand(_ =>
         {
             var addWindow = new AddThreadWindow();
-            var context = addWindow.DataContext as AddThreadViewModel;
 
-            if (context == null)
+            if (addWindow.DataContext is not AddThreadViewModel context)
                 throw new NullReferenceException("Invalid AddThreadWindow DataContext");
 
-            context.AddThread += (BomberThreadSettings thread) =>
+            context.AddThread += (BomberThreadSettings threadSettings) =>
             {
-                _threads.Add(thread);
-                
-                ThreadsCollection.Clear();
-                _threads.ForEach(x => ThreadsCollection.Add(new(x)));
-
+                Bomber.AddThread(threadSettings);
                 addWindow.Close();
             };
 
@@ -183,44 +125,23 @@ public class MWindowVM : INotifyPropertyChanged
 
         StartOrStopAttack = new RelayCommand(x =>
         {
-            if (_flooder != null)
+            if (Bomber.IsBomberWork)
             {
-                _flooder.Stop();
-                _flooder = null;
+                Bomber.Stop();
 
-                PrevSecondPacketCount = 0;
                 _currentSecond = 0;
                 _secondPacketCount = 0;
 
                 IsInputEnabled = true;
                 AttackButtonText = "💣 Начать атаку";
-                AttackStatus = "ОТКЛЮЧЕНА";
             }
 
             else
             {
                 IsInputEnabled = false;
                 AttackButtonText = "🚫 Остановить атаку";
-                AttackStatus = "ВКЛЮЧЕНА";
 
-                _flooder = new UDPFlooder(_ipAddress, _threadCount);
-
-                _flooder.PacketSended += (s, port) =>
-                {
-                    var second = DateTimeOffset.Now.ToUnixTimeSeconds();
-
-                    if (_currentSecond == second)
-                        _secondPacketCount++;
-
-                    else
-                    {
-                        _currentSecond = second;
-                        PrevSecondPacketCount = _secondPacketCount;
-                        _secondPacketCount = 0;
-                    }
-                };
-
-                _flooder.Start();
+                Bomber.Start();
             }
         });
     }

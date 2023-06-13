@@ -18,26 +18,26 @@ public class ThreadSettingsViewModel
     {
         WorkStatus = "Флудер не запущен";
         
-        SrcIpMode = thread.Ip.Mode switch 
+        SrcIpMode = thread.SourceIp.Mode switch 
         {
             IpMode.Random => "Случайно",
             IpMode.MySelf => "Используется свой",
-            IpMode.FromList => $"Задано {thread.Ip.Addresses?.Count()}",
+            IpMode.FromList => $"Задано {thread.SourceIp.Addresses?.Count()}",
             _ => throw new InvalidOperationException()
         };
 
-        SrcMacMode = thread.Mac.Mode switch
+        SrcMacMode = thread.SourceMac.Mode switch
         {
             MacMode.Random => "Случайно",
             MacMode.MySelf => "Используется свой",
-            MacMode.FromList => $"Задано {thread.Mac.Addresses?.Count()}",
+            MacMode.FromList => $"Задано {thread.SourceMac.Addresses?.Count()}",
             _ => throw new InvalidOperationException()
         };
 
-        DstPortsMode = thread.DestPort.Mode switch 
+        DstPortsMode = thread.DestinationPort.Mode switch 
         {
             PortMode.Random => "Случайно",
-            PortMode.FromList => $"Задано {thread.DestPort.Ports?.Count()}",
+            PortMode.FromList => $"Задано {thread.DestinationPort.Ports?.Count()}",
             _ => throw new InvalidOperationException()
         };
 

@@ -111,8 +111,8 @@ public class AddThreadViewModel : INotifyPropertyChanged
 
         var destMacComboBoxItems = new List<ComboBoxItem>()
         {
-            new("Случайный для каждого пакета", (int)MacMode.FromList),
-            new("Случайный из списка", (int)MacMode.Random)
+            new("Случайный для каждого пакета", (int)MacMode.Random),
+            new("Случайный из списка", (int)MacMode.FromList)
         };
 
         var srcMacComboBoxItems = new List<ComboBoxItem>()
@@ -124,8 +124,8 @@ public class AddThreadViewModel : INotifyPropertyChanged
 
         var portComboBoxItems = new List<ComboBoxItem>()
         {
-            new("Случайный для каждого пакета", (int)PortMode.FromList),
-            new("Случайный из списка", (int)PortMode.Random)
+            new("Случайный для каждого пакета", (int)PortMode.Random),
+            new("Случайный из списка", (int)PortMode.FromList)
         };
 
         var contentComboBoxItems = new List<ComboBoxItem>()
@@ -193,8 +193,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
         if (TimeIsDelayEnabled
             && (!int.TryParse(TimeDelayTextboxText, out int delay)
             || !int.TryParse(TimeEverySecondsTextboxText, out int every)
-            || !int.TryParse(TimeLengthTextboxText, out var length)
-            || delay > length))
+            || !int.TryParse(TimeLengthTextboxText, out var length)))
         {
             MessageBox.Show("Время задано неверно", "Ошибка!");
             return;
@@ -226,7 +225,7 @@ public class AddThreadViewModel : INotifyPropertyChanged
 
         var contentSettings = new ContentSettings(contentMode, contentMode == ContentMode.FromContent ? ContentField.TextBoxValue : null);
 
-        //AddThread?.Invoke(new(contentSettings, delaySettings, ipSettings, portSettings, srcPortSettings, macSettings));
+        AddThread?.Invoke(new(contentSettings, delaySettings, srcIp, dstIp, srcMac, dstMac, srcPort, dstPort, (byte)_ttl));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -14,40 +14,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30px"/>
             <RowDefinition/>
-            <RowDefinition Height="30px"/>
+            <RowDefinition Height="25px"/>
         </Grid.RowDefinitions>
-
-        <Grid Margin="0 0 0 5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="IP Адрес цели:"
-                />
-            <TextBox 
-                Grid.Column="1"
-                VerticalContentAlignment="Center"
-                Margin="5 0"
-                Text="{Binding IpAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                IsEnabled="{Binding IsInputEnabled}"
-                />
-
-            <Button Grid.Column="2" Content="Анализ сети" Width="140px" Command="{Binding OpenScanWindowCommand}"/>
-
-            <Button
-                Grid.Column="4"
-                Margin="5 0"
-                Content="{Binding AttackButtonText}"
-                IsEnabled="{Binding IsAttackButtonEnabled}"
-                Command="{Binding StartOrStopAttack}"
-                />
-        </Grid>
 
         <Grid Grid.Row="1" Margin="0 0 0 10px">
             <GroupBox Header="Потоки выполнения атаки">
@@ -67,11 +35,17 @@
                         BorderThickness="0"
                         >
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Статус потока" Binding="{Binding Path=WorkStatus}" Width="200"/>
-                            <DataGridTextColumn Header="Source IP" Binding="{Binding Path=SrcIpMode}" Width="130"/>
+                            <DataGridTextColumn Header="Статус потока" Binding="{Binding Path=WorkStatus}" Width="150"/>
+                            <DataGridTextColumn Header="Всего" Binding="{Binding Path=PacketCount}" Width="50"/>
+                            <DataGridTextColumn Header="Последний" Binding="{Binding Path=LastPacketSendedAt}" Width="100"/>
+                            <DataGridTextColumn Header="Source IP" Binding="{Binding Path=SrcIpMode}" Width="90"/>
+                            <DataGridTextColumn Header="Destinaion IP" Binding="{Binding Path=DstIpMode}" Width="90"/>
                             <DataGridTextColumn Header="Source MAC" Binding="{Binding Path=SrcMacMode}" Width="130"/>
-                            <DataGridTextColumn Header="Source Port" Binding="{Binding Path=DstPortsMode}" Width="130"/>
-                            <DataGridTextColumn Header="Содержимое пакета" Binding="{Binding Path=PacketContentMode}" Width="150"/>
+                            <DataGridTextColumn Header="Destination MAC" Binding="{Binding Path=DstMacMode}" Width="130"/>
+                            <DataGridTextColumn Header="Source Port" Binding="{Binding Path=SrcPortsMode}" Width="100"/>
+                            <DataGridTextColumn Header="Destination Port" Binding="{Binding Path=DstPortsMode}" Width="100"/>
+                            <DataGridTextColumn Header="Содержимое пакета" Binding="{Binding Path=PacketContentMode}" Width="200"/>
+                            <DataGridTextColumn Header="TTL" Binding="{Binding Path=TTL}" Width="150"/>
                             <DataGridTemplateColumn Header="" Width="50">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -129,6 +103,24 @@
                     </Grid>
                 </Grid>
             </GroupBox>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="Анализ сети" Width="140px" Command="{Binding OpenScanWindowCommand}"/>
+
+            <Button
+                Grid.Column="4"
+                Content="{Binding AttackButtonText}"
+                IsEnabled="{Binding IsAttackButtonEnabled}"
+                Command="{Binding StartOrStopAttack}"
+                />
         </Grid>
     </Grid>
 </Window>

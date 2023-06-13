@@ -233,13 +233,13 @@
                         IsEnabled="{Binding TimeIsDelayEnabled}"
                         Text="{Binding TimeEverySecondsTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         />
-                    <TextBlock Text=" сек. на протяжении "/>
+                    <TextBlock Text=" сек. отправлять "/>
                     <TextBox 
                         Width="75px"
                         IsEnabled="{Binding TimeIsDelayEnabled}"
                         Text="{Binding TimeLengthTextboxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         />
-                    <TextBlock Text=" сек. с интервалом "/>
+                    <TextBlock Text=" пакетов с интервалом "/>
                     <TextBox 
                         Width="75px"
                         IsEnabled="{Binding TimeIsDelayEnabled}"
