@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using PcapDotNet.Core;
 using PcapDotNet.Core.Extensions;
+using System.Net;
 
 namespace UDPFlood.Analyzer.Models;
 
@@ -14,6 +15,15 @@ public class UdpAnalyzer
     public string SelectedDeviceName => GetDeviceName(_selectedDevice);
     public IReadOnlyList<UdpPacket> Packets => _packets;
     public IReadOnlyList<string> DeviceNames { get; }
+
+    public int TotalPacketCount { get; private set; }
+    public Dictionary<IPAddress, int> PacketCountByIp { get; private set; } = new();
+    public List<UdpPacket> MinutePackets { get; private set; } = new();
+
+    private int _currentMinute = 0;
+    private Dictionary<IPAddress, int> _currentMinutePackets = new();
+    private int _currentTotalCount = 0;
+    private List<UdpPacket> _minutePackets = new();
 
     private readonly IReadOnlyList<LivePacketDevice> _devices;
     private readonly List<UdpPacket> _packets = new();
@@ -30,6 +40,7 @@ public class UdpAnalyzer
     }
 
     public event UdpAnalyzerEventArgs? OnPacketsChanged;
+    public event UdpAnalyzerEventArgs? OnEveryMinute;
 
     public void Start()
     {
@@ -41,6 +52,29 @@ public class UdpAnalyzer
         {
             _packets.Add(packet);
             OnPacketsChanged?.Invoke();
+
+            if (_currentMinute != DateTimeOffset.Now.Minute)
+            {
+                _currentMinute = DateTimeOffset.Now.Minute;
+                PacketCountByIp = _currentMinutePackets;
+                TotalPacketCount = _currentTotalCount;
+                _currentMinutePackets = new();
+                _currentTotalCount = 0;
+                MinutePackets = _minutePackets;
+                _minutePackets = new();
+
+                OnEveryMinute?.Invoke();
+            }
+
+            _minutePackets.Add(packet);
+            _currentTotalCount++;
+
+            var ip = IPAddress.Parse(packet.IpDestination.ToString());
+
+            if (_currentMinutePackets.ContainsKey(ip))
+                _currentMinutePackets[ip]++;
+            else
+                _currentMinutePackets.Add(ip, 1);
         };
 
         _thread.Start();

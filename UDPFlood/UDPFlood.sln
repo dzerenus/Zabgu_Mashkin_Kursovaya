@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UDPFlood.UDPWorker", "UDPFl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UDPFlood.Ethernet", "UDPFlood.Ethernet\UDPFlood.Ethernet.csproj", "{F6E0FEA4-50EF-4380-966C-FBF8CE136717}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDPFlood.Analyzer", "UDPFlood.Analyzer\UDPFlood.Analyzer.csproj", "{4F2FB6F3-F5BF-49EF-B346-95F997B5D80E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UDPFlood.Analyzer", "UDPFlood.Analyzer\UDPFlood.Analyzer.csproj", "{4F2FB6F3-F5BF-49EF-B346-95F997B5D80E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDPFlood.Shield", "UDPFlood.Shield\UDPFlood.Shield.csproj", "{7B4E51BB-56D9-4318-82FB-D5BB4385C44C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4F2FB6F3-F5BF-49EF-B346-95F997B5D80E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F2FB6F3-F5BF-49EF-B346-95F997B5D80E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F2FB6F3-F5BF-49EF-B346-95F997B5D80E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4E51BB-56D9-4318-82FB-D5BB4385C44C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4E51BB-56D9-4318-82FB-D5BB4385C44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4E51BB-56D9-4318-82FB-D5BB4385C44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4E51BB-56D9-4318-82FB-D5BB4385C44C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

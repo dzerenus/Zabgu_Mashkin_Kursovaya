@@ -13,6 +13,7 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -28,6 +29,29 @@
 
         <Grid Grid.Row="1" Margin="0 5">
             <DataGrid Grid.Row="1" ItemsSource="{Binding Packets}"></DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="Наибольшее кол-во пакетов прислано на:">
+                <ListBox Margin="2" ItemsSource="{Binding IpPackets}" SelectionChanged="ListBox_SelectionChanged"/>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1" Header="Наибольшее кол-во пакетов прислали с:">
+                <ListBox Margin="2" ItemsSource="{Binding TopSenders}"/>
+            </GroupBox>
+
+            <StackPanel Margin="5" Grid.Column="2" Orientation="Horizontal">
+                <TextBlock Text="Всего пакетов в сети:"/>
+                <TextBlock Margin="5 0" Text="{Binding TotalCount}"/>
+            </StackPanel>
+
+            
         </Grid>
     </Grid>
 </Window>
